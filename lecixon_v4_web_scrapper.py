@@ -87,198 +87,68 @@ st.title("News Sentiment Analysis Dashboard")
 
 keyword_input = st.text_input("Enter a keyword to search for news", placeholder="Type a keyword...")
 
-total, df = process_keyword("Dana TKD")
-print(df.head())
-# Streamlit app layout
-print("Jumlah berita:", total)
+if st.button("Analyze"):
+    if keyword_input:
+        with st.spinner('Scraping and analyzing the data...'):
+            positive_count, negative_count, neutral_count, total_count, df_clean = process_keyword(keyword_input)
 
-"""Import Dataset
-1.  Dataset Lexicon Positive
-2.  Dataset Lexicon Negative
-3.  Dataset Lexicon Jenis Dana terkait TKD (dummy)
-4.  Dataset Lexicon Daftar Pemda (dummy)
-"""
+        # Create plots
+        fig_positive = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=positive_count,
+            title={'text': "Positive Sentiment"},
+            gauge={'axis': {'range': [0, total_count]},
+                   'bar': {'color': "green"}}
+        ))
 
+        fig_negative = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=negative_count,
+            title={'text': "Negative Sentiment"},
+            gauge={'axis': {'range': [0, total_count]},
+                   'bar': {'color': "red"}}
+        ))
 
-import csv
+        fig_neutral = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=neutral_count,
+            title={'text': "Neutral Sentiment"},
+            gauge={'axis': {'range': [0, total_count]},
+                   'bar': {'color': "yellow"}}
+        ))
 
-def load_lexicon(filepath):
-    lexicon = {}
-    with open(filepath, 'r', encoding='utf-8') as file:
-        reader = csv.reader(file)
-        next(reader)  # Lewati header
-        for row in reader:
-            if len(row) >= 2:
-                try:
-                    lexicon[row[0].strip()] = int(row[1].strip())
-                except ValueError:
-                    continue
-    return lexicon
+        fig_donut = go.Figure(go.Pie(
+            labels=['Positive', 'Negative', 'Neutral'],
+            values=[positive_count, negative_count, neutral_count],
+            hole=0.5,
+            marker=dict(colors=['green', 'red', 'yellow'])
+        ))
+        fig_donut.update_layout(title_text='Sentiment Distribution')
 
-# Load kedua lexicon dan dataset jenis dana dan pemda
-lexicon_positive = load_lexicon('positive_.csv')
-lexicon_negative = load_lexicon('negative_.csv')
-jenis_dana = load_lexicon('jenis_dana.csv')
-daftar_pemda = load_lexicon('pemda.csv')
+        # Create a horizontal layout using st.columns
+        col1, col2, col3 = st.columns(3)
 
+        # Display results in each column
+        col1.plotly_chart(fig_positive, use_container_width=True)
+        col2.plotly_chart(fig_negative, use_container_width=True)
+        col3.plotly_chart(fig_neutral, use_container_width=True)
 
-#Cleaning teks dari karkter
+        st.plotly_chart(fig_donut, use_container_width=True)
 
-def cleaningText(text):
-  text = re.sub(r'@[A-Za-z0-9]+', '', text) # hapus mention
-  text = re.sub(r'#[A-Za-z0-9]+', '', text) # hapus hashtag
-  text = re.sub(r'RT[\s]', '', text) # hapus tulisan RT
-  text = re.sub(r"http\S+", '', text) # hapus link
-  text = re.sub(r'[0-9]+', '', text) # hapus angka
-  text = text.replace('\n', ' ') # ganti garis baru menjadi spasi
-  # hapus tanda baca
-  text = text.translate(str.maketrans('', '', string.punctuation))
-  text = text.strip(' ') # hapus spasi dari teks bagian kiri dan kanan
-  return text
+        st.write(f"News articles found: {total_count}")
 
-def casefoldingText(text): # konversi ke huruf kecil
-  text = text.lower()
-  return text
+        # Show DataFrame
+        st.dataframe(df_clean, use_container_width=True)
 
-def tokenizingText(text): # Tokenizing or splitting a string
-  text = word_tokenize(text)
-  return text
-
-def filteringText(text): # menghilangkan stopwors
-  listStopwords = set(stopwords.words('indonesian'))
-  filtered = []
-  for txt in text:
-      if txt not in listStopwords:
-          filtered.append(txt)
-          text = filtered
-  return text
-
-def stemmingText(text): # menghilangkan imbuhan
-  factory = StemmerFactory()
-  stemmer = factory.create_stemmer()
-  text = [stemmer.stem(word) for word in text]
-  return text
-
-def toSentence(list_words): # Convert list of words into sentence
-  sentence = ' '.join(word for word in list_words)
-  return sentence
-
-#memanggil fungsi secara berurutan untuk seluruh tahap preprocess
-def preprocess(text):
-  text = toSentence(stemmingText(filteringText(tokenizingText(casefoldingText(cleaningText(text))))))
-  return text
-
-#def preprocess2(text):
-#  text = re.sub(r'[^\w\s]', '', text.lower())
-#  return text.split()
-
-#metode Lexicon
-def analyze_sentiment_lexicon(text, lexicon_pos, lexicon_neg):
-    cleaned = cleaningText(text)
-    cleaned_casefolding = casefoldingText(cleaned)
-    tokenized_cleaned =  tokenizingText(cleaned)
-    filtered_tokenized_cleaned = filteringText(tokenized_cleaned)
-    tokens = stemmingText(filtered_tokenized_cleaned)
-    tokens_sentence= toSentence(tokens)
-    score = 0
-
-    for word in tokens:
-        if word in lexicon_pos:
-            score += lexicon_pos.get(word, 0)
-           # print(f" score pos: {score} {lexicon_pos.get(word, 0)}")  # debug
-           ##### print(f"{word}: {lexicon_pos.get(word, 0)} + {lexicon_neg.get(word, 0)}, total: {score}")  # debug
-            continue
-        elif word in lexicon_neg:
-            score += lexicon_neg.get(word, 0)
-           # print(f" score negatif: {score} {lexicon_neg.get(word, 0)}")  # debug
-           #### print(f"{word}: {lexicon_pos.get(word, 0)} + {lexicon_neg.get(word, 0)}, total: {score}")  # debug
-            continue
-
-
-    if score > 0:
-        label = 'positif'
-    elif score < 0:
-        label = 'negatif'
+        # Download CSV
+        csv = df_clean.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="Download CSV",
+            data=csv,
+            file_name='news_sentiment_analysis.csv',
+            mime='text/csv',
+        )
     else:
-        label = 'netral'
+        st.error("Please enter a keyword.")
 
-    return score, label,  tokens
-
-#Metode TextBlob
-
-def translate_column_to_english(df, kolom):
-    if kolom not in df.columns:
-        raise ValueError(f"Kolom '{kolom}' tidak ditemukan. Kolom yang tersedia: {df.columns.tolist()}")
-
-    df = df.copy()  # jangan ubah df asli
-    df[kolom] = df[kolom].apply(cleaningText)
-
-    translator = Translator()
-    translations = {}
-
-    unique_elements = df[kolom].dropna().unique()
-    for element in unique_elements:
-        try:
-            translations[element] = translator.translate(element, src='id', dest='en').text
-        except Exception as e:
-            translations[element] = f"ERROR: {e}"
-
-    df['translated_text'] = df[kolom].replace(translations)
-    df['translated_text'] = df['translated_text'].str.replace(r'([^0-9A-Za-z \t])|(\w+:\/\/\S+)', ' ', regex=True)
-    df['translated_text'] = df['translated_text'].str.lower()
-
-    return df
-
-def detect_jenisdana(text, jenis_dana):
-    daftar_jenis_dana = jenis_dana
-    #daftar_jenis_dana = str(daftar_jenis_dana).lower()
-    text = str(text).lower()
-    ditemukan =[]
-    for jenis in daftar_jenis_dana:
-        if jenis.lower() in text.lower():
-            ditemukan.append(jenis)
-    return ditemukan if ditemukan else ['tidak terdeteksi']
-
-
-def detect_pemda(text, daftar_pemda):
-    daftar_pemda = daftar_pemda
-    text = str(text).lower()
-    ditemukan =[]
-    for jenis in daftar_pemda:
-        if jenis.lower() in text.lower():
-            ditemukan.append(jenis)
-    return ditemukan if ditemukan else ['tidak terdeteksi']
-
-df["cleaned_content"] = df["title"].apply(preprocess)
-df['bobot'] = df.apply(lambda row: analyze_sentiment_lexicon(row['cleaned_content'], lexicon_positive, lexicon_negative)[0], axis=1)
-df['pred_sentiment'] = df.apply(lambda row: analyze_sentiment_lexicon(row['cleaned_content'], lexicon_positive, lexicon_negative)[1], axis=1)
-df['jenis_dana'] = df.apply(lambda row: ', '.join(detect_jenisdana(row['title'], jenis_dana)), axis=1)
-df['pemda'] = df.apply(lambda row: ', '.join(detect_pemda(row['title'], daftar_pemda)), axis=1)
-
-df.head()
-
-
-
-# Warna untuk tiap sentimen
-warna = {
-    'positif': '#2ecc71',
-    'negatif': '#e74c3c',
-    'netral':  '#f1c40f'
-}
-
-plt.figure(figsize=(5, 5))
-ax = sns.countplot(x='pred_sentiment', hue='pred_sentiment', data=df, palette=warna, legend=False)
-
-# Tambahkan angka di atas bar
-for p in ax.patches:
-    count = int(p.get_height())
-    x = p.get_x() + p.get_width() / 2
-    y = p.get_height()
-    ax.text(x, y + 0.1, str(count), ha='center', va='bottom')
-
-plt.title("Distribusi Sentimen")
-plt.xlabel("Label Sentimen")
-plt.ylabel("Jumlah")
-plt.ylim(0, ax.get_ylim()[1] * 1.1)  # beri ruang di atas bar
-plt.show()
 
