@@ -31,8 +31,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
 
-from wordcloud import WordCloud
-from wordcloud import WordCloud, STOPWORDS
+#from wordcloud import WordCloud
+#from wordcloud import WordCloud, STOPWORDS
 from tensorflow.keras.preprocessing import text
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
