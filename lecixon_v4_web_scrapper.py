@@ -224,8 +224,6 @@ def translate_column_to_english(df, kolom):
 
     return df
 
-# """Fungsi Deteksi Kata terkait Transfer Keuangan Daerah
-
 def detect_jenisdana(text, jenis_dana):
     daftar_jenis_dana = jenis_dana
     #daftar_jenis_dana = str(daftar_jenis_dana).lower()
@@ -236,7 +234,6 @@ def detect_jenisdana(text, jenis_dana):
             ditemukan.append(jenis)
     return ditemukan if ditemukan else ['tidak terdeteksi']
 
-# """Fungsi Deteksi Kata Terkait nama Pemda
 
 def detect_pemda(text, daftar_pemda):
     daftar_pemda = daftar_pemda
@@ -255,7 +252,7 @@ df['pemda'] = df.apply(lambda row: ', '.join(detect_pemda(row['title'], daftar_p
 
 df.head()
 
-# """Plotting
+
 
 # Warna untuk tiap sentimen
 warna = {
