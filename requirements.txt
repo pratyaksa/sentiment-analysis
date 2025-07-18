@@ -1,0 +1,9 @@
+pandas
+gnews
+transformers
+plotly
+torch
+Sastrawi
+nltk
+streamlit
+googletrans==4.0.0-rc1
