@@ -7,17 +7,17 @@ Original file is located at
     https://colab.research.google.com/drive/1kCau8FxfNUOVvBRw8YMLXUftxvR6sAKb
 """
 
-!pip install streamlit pandas gnews transformers plotly torch
+#!pip install streamlit pandas gnews transformers plotly torch
 #untuk instal web scrapper
 #install sastrawi dulu
-!pip install Sastrawi
+#!pip install Sastrawi
 #untuk word tokenize
-!pip install nltk
+#!pip install nltk
 #import googletrans
 #!pip install googletrans
-!pip install googletrans==4.0.0-rc1
+#!pip install googletrans==4.0.0-rc1
 
-!pip install streamlit
+#!pip install streamlit
 
 """Import Library"""
 
