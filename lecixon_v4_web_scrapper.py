@@ -280,5 +280,3 @@ plt.ylabel("Jumlah")
 plt.ylim(0, ax.get_ylim()[1] * 1.1)  # beri ruang di atas bar
 plt.show()
 
-
-"""
