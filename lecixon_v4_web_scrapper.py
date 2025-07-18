@@ -33,7 +33,7 @@ import streamlit as st
 
 #from wordcloud import WordCloud
 #from wordcloud import WordCloud, STOPWORDS
-from tensorflow.keras.preprocessing import text
+#from tensorflow.keras.preprocessing import text
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 
 import nltk
