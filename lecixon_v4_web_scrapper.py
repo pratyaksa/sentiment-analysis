@@ -224,7 +224,7 @@ def translate_column_to_english(df, kolom):
 
     return df
 
-#"""Fungsi Deteksi Kata terkait Transfer Keuangan Daerah"""
+# """Fungsi Deteksi Kata terkait Transfer Keuangan Daerah"""
 
 def detect_jenisdana(text, jenis_dana):
     daftar_jenis_dana = jenis_dana
