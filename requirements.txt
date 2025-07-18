@@ -9,3 +9,4 @@ streamlit
 googletrans
 matplotlib
 seaborn
+textblob
