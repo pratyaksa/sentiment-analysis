@@ -82,6 +82,11 @@ def process_keyword(keyword):
     total_count = len(df_clean)
     return total_count, df_clean
 
+# Streamlit app layout
+st.title("News Sentiment Analysis Dashboard")
+
+keyword_input = st.text_input("Enter a keyword to search for news", placeholder="Type a keyword...")
+
 total, df = process_keyword("Dana TKD")
 print(df.head())
 # Streamlit app layout
