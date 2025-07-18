@@ -94,6 +94,7 @@ print("Jumlah berita:", total)
 4.  Dataset Lexicon Daftar Pemda (dummy)
 """
 
+"""
 import csv
 
 def load_lexicon(filepath):
@@ -280,3 +281,5 @@ plt.ylabel("Jumlah")
 plt.ylim(0, ax.get_ylim()[1] * 1.1)  # beri ruang di atas bar
 plt.show()
 
+
+"""
