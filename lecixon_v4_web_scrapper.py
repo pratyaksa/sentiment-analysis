@@ -116,7 +116,7 @@ lexicon_negative = load_lexicon('negative_.csv')
 jenis_dana = load_lexicon('jenis_dana.csv')
 daftar_pemda = load_lexicon('pemda.csv')
 
-"""Preprocessing dan fungisi lexicon"""
+#"""Preprocessing dan fungisi lexicon"""
 
 #Cleaning teks dari karkter
 
@@ -200,7 +200,7 @@ def analyze_sentiment_lexicon(text, lexicon_pos, lexicon_neg):
 
     return score, label,  tokens
 
-"""Metode TextBlob"""
+#"""Metode TextBlob"""
 
 def translate_column_to_english(df, kolom):
     if kolom not in df.columns:
@@ -225,7 +225,7 @@ def translate_column_to_english(df, kolom):
 
     return df
 
-"""Fungsi Deteksi Kata terkait Transfer Keuangan Daerah"""
+#"""Fungsi Deteksi Kata terkait Transfer Keuangan Daerah"""
 
 def detect_jenisdana(text, jenis_dana):
     daftar_jenis_dana = jenis_dana
@@ -256,7 +256,7 @@ df['pemda'] = df.apply(lambda row: ', '.join(detect_pemda(row['title'], daftar_p
 
 df.head()
 
-"""Plotting"""
+#"""Plotting"""
 
 # Warna untuk tiap sentimen
 warna = {
