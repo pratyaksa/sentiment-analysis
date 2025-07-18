@@ -9,4 +9,3 @@ streamlit
 googletrans
 matplotlib
 seaborn
-tensorflow
